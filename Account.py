@@ -1,7 +1,7 @@
 class Account(object):
     global Acc_anzahl
     Acc_anzahl = 0
-    def __init__(self, name, passwort, level, gold, packs, staub):
+    def __init__(self, name, passwort, level, gold, packs, staub, ep=0):
         global Acc_anzahl
         Acc_anzahl += 1
         self.name = name
@@ -10,6 +10,7 @@ class Account(object):
         self.gold = gold
         self.packs = packs
         self.staub = staub
+        self.ep = ep
 
         try:
             if self.level < 1 or self.level > 30:
@@ -105,7 +106,8 @@ class Account(object):
             print('Fehler')
 
     def get_ep(self, anzahl):
-        pass
+        if self.level == 1:
+            pass
         
     
             

@@ -1,5 +1,6 @@
 from tkinter import *
 import time
+from Account import *
 
 #My windows
 fenster = Tk()
