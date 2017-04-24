@@ -1,7 +1,7 @@
 class Account(object):
     global Acc_anzahl
     Acc_anzahl = 0
-    def __init__(self, name, passwort, level, gold, packs, staub, ep=0):
+    def __init__(self, name, passwort, level, gold, packs, staub, ep=0, epnextlevel=100):
         global Acc_anzahl
         Acc_anzahl += 1
         self.name = name
@@ -11,7 +11,8 @@ class Account(object):
         self.packs = packs
         self.staub = staub
         self.ep = ep
-
+        self.epnextlevel = epnextlevel
+        
         try:
             if self.level < 1 or self.level > 30:
                 del self
@@ -75,22 +76,73 @@ class Account(object):
         except:
             print(str(item),'gibt es nicht.')
 
-    def levelup(self):
-        try:
-            if self.level >= 30:
-                print('Maximales Level erreicht!')
-            elif self.level < 30:
-                self.level += 1
-                
-        except:
-            print('Fehler beim levelup.')
-
     def leveldown(self):
         try:
             if self.level <= 1:
                 print('Mindest Level erreicht!')
             elif self.level >= 2:
                 self.level -= 1
+                print('Level wurde auf',str(self.level),'gesetzt.')
+                if self.level == 1:
+                    self.epnextlevel = 100
+                elif self.level == 2:
+                    self.epnextlevel = 150
+                elif self.level == 3:
+                    self.epnextlevel = 200
+                elif self.level == 4:
+                    self.epnextlevel = 250
+                elif self.level == 5:
+                    self.epnextlevel = 500
+                elif self.level == 6:
+                    self.epnextlevel = 600
+                elif self.level == 7:
+                    self.epnextlevel = 700
+                elif self.level == 8:
+                    self.epnextlevel = 800
+                elif self.level == 9:
+                    self.epnextlevel = 900
+                elif self.level == 10:
+                    self.epnextlevel = 1000
+                elif self.level == 11:
+                    self.epnextlevel = 1250
+                elif self.level == 12:
+                    self.epnextlevel = 1500
+                elif self.level == 13:
+                    self.epnextlevel = 1750
+                elif self.level == 14:
+                    self.epnextlevel = 2000
+                elif self.level == 15:
+                    self.epnextlevel = 2500
+                elif self.level == 16:
+                    self.epnextlevel = 3000
+                elif self.level == 17:
+                    self.epnextlevel = 3500
+                elif self.level == 18:
+                    self.epnextlevel = 4000
+                elif self.level == 19:
+                    self.epnextlevel = 4500
+                elif self.level == 20:
+                    self.epnextlevel = 5000
+                elif self.level == 21:
+                    self.epnextlevel = 6000
+                elif self.level == 22:
+                    self.epnextlevel = 7000
+                elif self.level == 23:
+                    self.epnextlevel = 8000
+                elif self.level == 24:
+                    self.epnextlevel = 9000
+                elif self.level == 25:
+                    self.epnextlevel = 10000
+                elif self.level == 26:
+                    self.epnextlevel = 10000
+                elif self.level == 27:
+                    self.epnextlevel = 10000
+                elif self.level == 28:
+                    self.epnextlevel = 10000
+                elif self.level == 29:
+                    self.epnextlevel = 10000
+                elif self.level == 30:
+                    self.epnextlevel = 20000
                 
         except:
             print('Fehler beim leveldown.')
@@ -99,16 +151,155 @@ class Account(object):
         try:
             if anzahl < 1 or anzahl > 30:
                 print('Unmöglich!')
-            elif not anzahl < 1 or not anzahl > 30:
-                self.level == anzahl
+            else:
+                self.level = anzahl
+                print('Level wurde auf',str(self.level),'gesetzt.')
+                if self.level == 1:
+                    self.epnextlevel = 100
+                elif self.level == 2:
+                    self.epnextlevel = 150
+                elif self.level == 3:
+                    self.epnextlevel = 200
+                elif self.level == 4:
+                    self.epnextlevel = 250
+                elif self.level == 5:
+                    self.epnextlevel = 500
+                elif self.level == 6:
+                    self.epnextlevel = 600
+                elif self.level == 7:
+                    self.epnextlevel = 700
+                elif self.level == 8:
+                    self.epnextlevel = 800
+                elif self.level == 9:
+                    self.epnextlevel = 900
+                elif self.level == 10:
+                    self.epnextlevel = 1000
+                elif self.level == 11:
+                    self.epnextlevel = 1250
+                elif self.level == 12:
+                    self.epnextlevel = 1500
+                elif self.level == 13:
+                    self.epnextlevel = 1750
+                elif self.level == 14:
+                    self.epnextlevel = 2000
+                elif self.level == 15:
+                    self.epnextlevel = 2500
+                elif self.level == 16:
+                    self.epnextlevel = 3000
+                elif self.level == 17:
+                    self.epnextlevel = 3500
+                elif self.level == 18:
+                    self.epnextlevel = 4000
+                elif self.level == 19:
+                    self.epnextlevel = 4500
+                elif self.level == 20:
+                    self.epnextlevel = 5000
+                elif self.level == 21:
+                    self.epnextlevel = 6000
+                elif self.level == 22:
+                    self.epnextlevel = 7000
+                elif self.level == 23:
+                    self.epnextlevel = 8000
+                elif self.level == 24:
+                    self.epnextlevel = 9000
+                elif self.level == 25:
+                    self.epnextlevel = 10000
+                elif self.level == 26:
+                    self.epnextlevel = 10000
+                elif self.level == 27:
+                    self.epnextlevel = 10000
+                elif self.level == 28:
+                    self.epnextlevel = 10000
+                elif self.level == 29:
+                    self.epnextlevel = 10000
+                elif self.level == 30:
+                    self.epnextlevel = 20000
 
         except:
             print('Fehler')
 
+    def levelup(self):
+        try:
+            if self.level >= 30:
+                print('Maximales Level erreicht!')
+            else:
+                self.level += 1
+                if self.level == 1:
+                    self.epnextlevel = 100
+                elif self.level == 2:
+                    self.epnextlevel = 150
+                elif self.level == 3:
+                    self.epnextlevel = 200
+                elif self.level == 4:
+                    self.epnextlevel = 250
+                elif self.level == 5:
+                    self.epnextlevel = 500
+                elif self.level == 6:
+                    self.epnextlevel = 600
+                elif self.level == 7:
+                    self.epnextlevel = 700
+                elif self.level == 8:
+                    self.epnextlevel = 800
+                elif self.level == 9:
+                    self.epnextlevel = 900
+                elif self.level == 10:
+                    self.epnextlevel = 1000
+                elif self.level == 11:
+                    self.epnextlevel = 1250
+                elif self.level == 12:
+                    self.epnextlevel = 1500
+                elif self.level == 13:
+                    self.epnextlevel = 1750
+                elif self.level == 14:
+                    self.epnextlevel = 2000
+                elif self.level == 15:
+                    self.epnextlevel = 2500
+                elif self.level == 16:
+                    self.epnextlevel = 3000
+                elif self.level == 17:
+                    self.epnextlevel = 3500
+                elif self.level == 18:
+                    self.epnextlevel = 4000
+                elif self.level == 19:
+                    self.epnextlevel = 4500
+                elif self.level == 20:
+                    self.epnextlevel = 5000
+                elif self.level == 21:
+                    self.epnextlevel = 6000
+                elif self.level == 22:
+                    self.epnextlevel = 7000
+                elif self.level == 23:
+                    self.epnextlevel = 8000
+                elif self.level == 24:
+                    self.epnextlevel = 9000
+                elif self.level == 25:
+                    self.epnextlevel = 10000
+                elif self.level == 26:
+                    self.epnextlevel = 10000
+                elif self.level == 27:
+                    self.epnextlevel = 10000
+                elif self.level == 28:
+                    self.epnextlevel = 10000
+                elif self.level == 29:
+                    self.epnextlevel = 10000
+                elif self.level == 30:
+                    self.epnextlevel = 20000
+                print('Level:',str(self.level),'wurde erreicht!')
+                
+        except:
+            print('Fehler beim levelup.')
+            
+
     def get_ep(self, anzahl):
-        if self.level == 1:
+        self.ep += anzahl
+        if self.ep < self.epnextlevel:
             pass
-        
+
+        elif self.ep >= self.epnextlevel:
+            while self.ep >= self.epnextlevel:
+                self.ep -= self.epnextlevel
+                self.levelup()
+
     
             
                     
