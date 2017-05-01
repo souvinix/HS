@@ -1,164 +1,241 @@
 from tkinter import *
+import sqlite3
+from Account import *
+
+connection = sqlite3.connect('/Users/noahg/Desktop/HS II/HS_Database.db')
+
+cursor = connection.cursor()
+
+def RegisterSQL(Name, Passwort, Passwort2):
+    Gold = 0
+    Level = 1
+    Staub = 0
+    Packs = 0
+    Ep = 0
+    Epnextlevel = 100
+    Name = Name
+    Passwort = Passwort
+    Passwort2 = Passwort2
+    
+    cursor.execute("INSERT INTO Accounts (Name, Passwort, Level, Gold, Packs, Staub, Ep, Epnextlevel) VALUES (?,?,?,?,?,?,?,?)", (Name, Passwort, Level, Gold, Packs, Staub, Ep, Epnextlevel))
+    connection.commit()
+
+def AnmeldenSQL(Name, Passwort):
+    find_user = ('select * from Accounts where Name = ? and Passwort = ?')
+    cursor.execute(find_user, [(Name), (Passwort)])
+    results = cursor.fetchall()
+
+    if results:
+        for i in results:
+            print('Willkommen', str(Name)+'!')
+
+    else:
+
+        print('Der Account mit dem Namen:\n', str(Name),'\nund dem Passwort:\n', str(Passwort),'\nkonnte nicht gefunden werden!\n\n')
+    
+
+def Anmeldebutton_enter(event):
+    AnmCanvas.itemconfigure('Anmeldebutton', image = Anmeldebutton_enter_image)
+    AnmCanvas.tag_bind('Anmeldebutton', '<Button-1>', Anmeldebutton_function)
+def Anmeldebutton_leave(event):
+    AnmCanvas.itemconfigure('Anmeldebutton', image = Anmeldebutton_image)
+def Registerbutton_enter(event):
+    AnmCanvas.itemconfigure('Registerbutton', image = Registerbutton_enter_image)
+    AnmCanvas.tag_bind('Registerbutton', '<Button-1>', Registerbutton_function)
+def Registerbutton_leave(event):
+    AnmCanvas.itemconfigure('Registerbutton', image = Registerbutton_image)
+
+def bestätigen_enter(event):
+    if Position == 'Anmelden':
+        AnmCanvas.itemconfigure('Bestätigen', image = bestätigen_anm_enter_image)
+        AnmCanvas.tag_bind('Bestätigen', '<Button-1>', bestätigen_func)
+    elif Position == 'Registrieren':
+        AnmCanvas.itemconfigure('Bestätigen', image = bestätigen_anm_enter_image)
+        AnmCanvas.tag_bind('Bestätigen', '<Button-1>', bestätigen_reg_func)
+def bestätigen_leave(event):
+    AnmCanvas.itemconfigure('Bestätigen', image = bestätigen_anm_image)
+
+def bestätigen_func(event):
+    Entry_Name = Name_eingabe.get()
+    Entry_Passwort = Passwort_eingabe.get()
+    AnmeldenSQL(Entry_Name, Entry_Passwort)
+    Name_eingabe.delete(0, 'end')
+    Passwort_eingabe.delete(0, 'end')
+
+def Anmeldebutton_function(event):
+    global Position, Name_eingabe, Passwort_eingabe
+    User.Window('OnlyBG')
+    Position = 'Anmelden'
+    User.create_backbutton(Position)
+
+    AnmCanvas.create_text(250, 170, text = 'Name:', font = ('Terminator Two', 20), tags = 'Name')
+    #Entry
+    Name_eingabe = Entry(bd = 15, width = 10, font = ('MelodBold', 20), bg = '#8B591C')
+    Name_eingabe.place(x = 150, y = 200)
+
+    AnmCanvas.create_text(250, 310, text = 'Passwort', font = ('Terminator Two', 20), tags = 'Passwort')
+    #Entry
+    Passwort_eingabe = Entry(bd = 15, width = 10, font = ('MelodBold', 20), bg = '#8B591C', show = '*')
+    Passwort_eingabe.place(x = 150, y = 330)
+
+    AnmCanvas.create_image(250, 480, image = bestätigen_anm_image, tags = 'Bestätigen')
+    
+    AnmCanvas.tag_bind('Bestätigen', '<Enter>', bestätigen_enter)
+    AnmCanvas.tag_bind('Bestätigen', '<Leave>', bestätigen_leave)
+    anmeldung.bind('<Return>', bestätigen_func)
+
+def Registerbutton_function(event):
+    global Position, Name_eingabe, Passwort_eingabe, Passwort_eingabe2
+    Position = 'Registrieren'
+    User.Window('OnlyBG')
+    User.create_backbutton(Position)
+    AnmCanvas.create_text(250, 150, text = 'Name:', font = ('Terminator Two', 20), tags = 'Name')
+    Name_eingabe = Entry(bd = 15, width = 10, font = ('MelodBold', 20), bg = '#8B591C')
+    Name_eingabe.place(x = 150, y = 170)
+
+    AnmCanvas.create_text(250, 250, text = 'Passwort:', font = ('Terminator Two', 20), tags = 'Passwort')
+    Passwort_eingabe = Entry(bd = 15, width = 10, font = ('MelodBold', 20), bg = '#8B591C', show = '*')
+    Passwort_eingabe.place(x = 150, y = 270)
+
+    AnmCanvas.create_text(250, 350, text = 'Passwort wiederholen:', font = ('Terminator Two', 18), tags = 'Passwort2')
+    Passwort_eingabe2 = Entry(bd = 15, width = 10, font = ('MelodBold', 20), bg = '#8B591C', show = '*')
+    Passwort_eingabe2.place(x = 150, y = 370)
+
+    AnmCanvas.create_image(250, 510, image = bestätigen_anm_image, tags = 'Bestätigen')
+    AnmCanvas.tag_bind('Bestätigen', '<Enter>', bestätigen_enter)
+    AnmCanvas.tag_bind('Bestätigen', '<Leave>', bestätigen_leave)
+    anmeldung.bind('<Return>', bestätigen_reg_func)
+
+def bestätigen_reg_func(event):
+    Entry_Name = Name_eingabe.get()
+    Entry_Passwort = Passwort_eingabe.get()
+    Entry_Passwort2 = Passwort_eingabe2.get()
+    Register = True
+    
+    if Entry_Passwort != Entry_Passwort2:
+        print('Passwörter stimmen nicht überein.')
+        Register = False
+
+    elif Entry_Passwort == '' and Entry_Passwort2 == '':
+        print('Füllen sie die Pflichtfelder aus(Passwort).')
+        Register = False
+
+    elif (len(Entry_Passwort) < 7):
+        print('Passwort ist zu kurz! (7 Zeichen)')
+        Register = False
+        
+    if Entry_Name == '':
+        print('Füllen sie die Pflichtfelder aus(Name).')
+        Register == False
+
+    elif (len(Entry_Name) < 4):
+        print('Name ist zu kurz! (4 Zeichen)')
+        Register == False
+
+    if Register == True:
+        find_user = ('select * from Accounts where Name = ?')
+        cursor.execute(find_user, [(Entry_Name),])
+        results = cursor.fetchall()
+
+        if results:
+            print('User existiert bereits!')
+
+        else:
+            print('Account wurde erstellt!')
+            RegisterSQL(Entry_Name, Entry_Passwort, Entry_Passwort2)
+            Name_eingabe.delete(0, 'end')
+            Passwort_eingabe.delete(0, 'end')
+    
+
+def backbutton_enter(event):
+    AnmCanvas.itemconfigure('backbutton', image = backbutton_enter_anm_image)
+    AnmCanvas.tag_bind('backbutton', '<Button-1>', backbutton_func)
+
+def backbutton_leave(event):
+    AnmCanvas.itemconfigure('backbutton', image = backbutton_anm_image)
+
+def backbutton_func(event):
+    if Position == 'Anmelden':
+        User.Window('OnlyBG')
+        User.Aufrufen()
+        try:
+            Name_eingabe.destroy()
+            Passwort_eingabe.destroy()
+            AnmCanvas.delete('Name', 'Passwort', 'Bestätigen')
+        except:
+            pass
+        
+    elif Position == 'Registrieren':
+        User.Window('OnlyBG')
+        User.Aufrufen()
 
 class Anmeldefenster(object):
-    def Aufrufen(self, Nda=0):
-        global Anm_Canvas, backbutton_anm_image, backbutton_enter_anm_image, anm_pos, anmeldung
-        global anm_pos, Passwort_eingabe, Name_eingabe
+    def __init__(self):
+        global anmeldung
+        anmeldung = Tk()
+        anmeldung.geometry('495x675')
+        anmeldung.title('Anmeldung')
+        anmeldung.resizable(0,0)
+        anmeldung.configure(bg = 'black')
+    def Aufrufen(self):
+        global AnmCanvas, Anmeldebutton_enter_image, Anmeldebutton_image, Registerbutton_image, Registerbutton_enter_image
+        global Hs_Logo, backbutton_anm_image, backbutton_enter_anm_image, bestätigen_anm_image, bestätigen_anm_enter_image
+        global User, Position
 
-        def Anmeldebutton_function(event):
-            global anm_pos, Passwort_eingabe, Name_eingabe, Anm_Canvas
-            self.Schließen('All-BG')
-            self.create_backbutton()
-            anm_pos = 'Anmelden'
+        User = self
 
-            Anm_Canvas.create_text(250, 170, text = 'Name:', font = ('Terminator Two', 20), tags = 'Name')
-            Name_eingabe = Entry(bd = 15, width = 10, font = ('Terminator Two', 20), bg = '#8B591C')
-            Name_eingabe.place(x = 150, y = 200)
+        #PhotoImages:
+        pfad = 'Anmeldefenster_images/'
+        BG = PhotoImage(file = pfad+'Anmeldung_bg.png')
+        Anmeldebutton_image = PhotoImage(file = pfad+'Anmeldebutton.png')
+        Anmeldebutton_enter_image = PhotoImage(file = pfad+'Anmeldebutton_enter.png')
+        Registerbutton_image = PhotoImage(file = pfad+'registerbutton.png')
+        Registerbutton_enter_image = PhotoImage(file = pfad+'registerbutton_enter.png')
+        Hs_Logo = PhotoImage(file = pfad+'Hearthstone_Logo_Anmeldung1.png')
+        backbutton_anm_image = PhotoImage(file = pfad+'backbutton_anm.png')
+        backbutton_enter_anm_image = PhotoImage(file = pfad+'backbutton_enter_anm.png')
+        bestätigen_anm_image = PhotoImage(file = pfad+'Bestätigen_anm.png')
+        bestätigen_anm_enter_image = PhotoImage(file = pfad+'Bestätigen_anm_enter.png')
 
-            Anm_Canvas.create_text(250, 310, text = 'Passwort', font = ('Terminator Two', 20), tags = 'Passwort')
-            Passwort_eingabe = Entry(bd = 15, width = 10, font = ('Terminator Two', 20), bg = '#8B591C', show = '*')
-            Passwort_eingabe.place(x = 150, y = 330)
+        Position = 'Hauptmenü'
 
-            Anm_Canvas.create_image(250, 480, image = bestätigen_anm_image, tags = 'Bestätigen')
-            
+        AnmCanvas = Canvas(anmeldung, width = 600, height = 800)
+        AnmCanvas.place(x=0,y=0)
+        AnmCanvas.create_image(250,338, image = BG, tags = 'Background')
+        AnmCanvas.create_image(450, 200, image = Hs_Logo, tags = 'LOGO')
+        AnmCanvas.create_image(250, 280, image = Anmeldebutton_image, tags = 'Anmeldebutton')
+        AnmCanvas.create_image(250, 380, image = Registerbutton_image, tags = 'Registerbutton')            
 
-            def bestätigen_enter(event):
-                Anm_Canvas.itemconfigure('Bestätigen', image = bestätigen_anm_enter_image)
-                Anm_Canvas.tag_bind('Bestätigen', '<Button-1>', bestätigen_func)
-            def bestätigen_leave(event):
-                Anm_Canvas.itemconfigure('Bestätigen', image = bestätigen_anm_image)
+        AnmCanvas.tag_bind('Anmeldebutton', '<Enter>', Anmeldebutton_enter)
+        AnmCanvas.tag_bind('Anmeldebutton', '<Leave>', Anmeldebutton_leave)
+        AnmCanvas.tag_bind('Registerbutton', '<Enter>', Registerbutton_enter)
+        AnmCanvas.tag_bind('Registerbutton', '<Leave>', Registerbutton_leave)
 
-            def bestätigen_func(event):
-                pass
+        anmeldung.mainloop()
 
-            
-            Anm_Canvas.tag_bind('Bestätigen', '<Enter>', bestätigen_enter)
-            Anm_Canvas.tag_bind('Bestätigen', '<Leave>', bestätigen_leave)
+    def Window(self, Modus):
+        if Modus == 'Exit' or Modus == 'Close':
+            anmeldung.destroy()
+        elif Modus == 'OnlyBG':
+            AnmCanvas.delete('Anmeldebutton', 'Registerbutton', 'LOGO')
+    
+        elif Modus == 'DelBG':
+            AnmCanvas.delete('Background')
 
-            
-        def Registerbutton_function(event):
-            global anm_pos
-            anm_pos = 'Registrieren'
-            self.Schließen('All-BG')
-            self.create_backbutton()
-        
-        if Nda == 0:
-            
-            anm_pos = 'Hauptmenü'
-            anmeldung = Tk()
-            anmeldung.geometry('495x675')
-            anmeldung.title('Anmeldung')
-            anmeldung.resizable(0,0)
-            anmeldung.configure(bg = 'black')
-
-            pfad = 'Anmeldefenster_images/'
-            BG = PhotoImage(file = pfad+'Anmeldung_bg.png')
-            Anmeldebutton_image = PhotoImage(file = pfad+'Anmeldebutton.png')
-            Anmeldebutton_enter_image = PhotoImage(file = pfad+'Anmeldebutton_enter.png')
-            Registerbutton_image = PhotoImage(file = pfad+'registerbutton.png')
-            Registerbutton_enter_image = PhotoImage(file = pfad+'registerbutton_enter.png')
-            Hs_Logo = PhotoImage(file = pfad+'Hearthstone_Logo_Anmeldung1.png')
-            backbutton_anm_image = PhotoImage(file = pfad+'backbutton_anm.png')
-            backbutton_enter_anm_image = PhotoImage(file = pfad+'backbutton_enter_anm.png')
-            bestätigen_anm_image = PhotoImage(file = pfad+'Bestätigen_anm.png')
-            bestätigen_anm_enter_image = PhotoImage(file = pfad+'Bestätigen_anm_enter.png')
-
-            Anm_Canvas = Canvas(anmeldung, width = 600, height = 800)
-            Anm_Canvas.place(x=0,y=0)
-            Anm_Canvas.create_image(250,338, image = BG, tags = 'Anm_bg')
-            Anm_Canvas.create_image(450, 200, image = Hs_Logo, tags = 'HS_LOGO')
-            Anm_Canvas.create_image(250, 280, image = Anmeldebutton_image, tags = 'Anmeldebutton')
-            Anm_Canvas.create_image(250, 380, image = Registerbutton_image, tags = 'Registerbutton')
-
-            def Anmeldebutton_enter(event):
-                Anm_Canvas.itemconfigure('Anmeldebutton', image = Anmeldebutton_enter_image)
-                Anm_Canvas.tag_bind('Anmeldebutton', '<Button-1>', Anmeldebutton_function)
-            def Anmeldebutton_leave(event):
-                Anm_Canvas.itemconfigure('Anmeldebutton', image = Anmeldebutton_image)
-            def Registerbutton_enter(event):
-                Anm_Canvas.itemconfigure('Registerbutton', image = Registerbutton_enter_image)
-                Anm_Canvas.tag_bind('Registerbutton', '<Button-1>', Registerbutton_function)
-            def Registerbutton_leave(event):
-                Anm_Canvas.itemconfigure('Registerbutton', image = Registerbutton_image)
                 
 
-            Anm_Canvas.tag_bind('Anmeldebutton', '<Enter>', Anmeldebutton_enter)
-            Anm_Canvas.tag_bind('Anmeldebutton', '<Leave>', Anmeldebutton_leave)
-            Anm_Canvas.tag_bind('Registerbutton', '<Enter>', Registerbutton_enter)
-            Anm_Canvas.tag_bind('Registerbutton', '<Leave>', Registerbutton_leave)
-
-            anmeldung.mainloop()
-            
-        elif Nda == 1:
-
-            pfad = 'Anmeldefenster_images/'
-            BG = PhotoImage(file = pfad+'Anmeldung_bg.png')
-            Anmeldebutton_image = PhotoImage(file = pfad+'Anmeldebutton.png')
-            Anmeldebutton_enter_image = PhotoImage(file = pfad+'Anmeldebutton_enter.png')
-            Registerbutton_image = PhotoImage(file = pfad+'registerbutton.png')
-            Registerbutton_enter_image = PhotoImage(file = pfad+'registerbutton_enter.png')
-            Hs_Logo = PhotoImage(file = pfad+'Hearthstone_Logo_Anmeldung1.png')
-            backbutton_anm_image = PhotoImage(file = pfad+'backbutton_anm.png')
-            backbutton_enter_anm_image = PhotoImage(file = pfad+'backbutton_enter_anm.png')
-            
-            Anm_Canvas.create_image(250,338, image = BG, tags = 'Anm_bg')
-            Anm_Canvas.create_image(450, 200, image = Hs_Logo, tags = 'HS_LOGO')
-            Anm_Canvas.create_image(250, 280, image = Anmeldebutton_image, tags = 'Anmeldebutton')
-            Anm_Canvas.create_image(250, 380, image = Registerbutton_image, tags = 'Registerbutton')
-
-            def Anmeldebutton_enter(event):
-                Anm_Canvas.itemconfigure('Anmeldebutton', image = Anmeldebutton_enter_image)
-                Anm_Canvas.tag_bind('Anmeldebutton', '<Button-1>', Anmeldebutton_function)
-            def Anmeldebutton_leave(event):
-                Anm_Canvas.itemconfigure('Anmeldebutton', image = Anmeldebutton_image)
-            def Registerbutton_enter(event):
-                Anm_Canvas.itemconfigure('Registerbutton', image = Registerbutton_enter_image)
-                Anm_Canvas.tag_bind('Registerbutton', '<Button-1>', Registerbutton_function)
-            def Registerbutton_leave(event):
-                Anm_Canvas.itemconfigure('Registerbutton', image = Registerbutton_image)
+    def create_backbutton(self, Where):
+        if Where == Position:
+            AnmCanvas.create_image(150,110, image = backbutton_anm_image, tags = 'backbutton')
+            AnmCanvas.tag_bind('backbutton', '<Enter>', backbutton_enter)
+            AnmCanvas.tag_bind('backbutton', '<Leave>', backbutton_leave)
             
 
-            Anm_Canvas.tag_bind('Anmeldebutton', '<Enter>', Anmeldebutton_enter)
-            Anm_Canvas.tag_bind('Anmeldebutton', '<Leave>', Anmeldebutton_leave)
-            Anm_Canvas.tag_bind('Registerbutton', '<Enter>', Registerbutton_enter)
-            Anm_Canvas.tag_bind('Registerbutton', '<Leave>', Registerbutton_leave)
-
-            anmeldung.mainloop()
-
-    def Schließen(self, Modus):
-        if Modus == 'All':
-            anmeldung.destroy()
-        elif Modus == 'All-BG':
-            Anm_Canvas.delete('Anmeldebutton', 'Registerbutton', 'HS_LOGO')
-        elif Modus == 'BG':
-            Anm_Canvas.delete('Anm_bg')
-
-    def create_backbutton(self):
-        global anm_pos, Passwort_eingabe, Name_eingabe, Anm_Canvas
-        Anm_Canvas.create_image(150,110, image = backbutton_anm_image, tags = 'backbutton')
-        def backbutton_enter(event):
-            Anm_Canvas.itemconfigure('backbutton', image = backbutton_enter_anm_image)
-            Anm_Canvas.tag_bind('backbutton', '<Button-1>', backbutton_func)
-
-        def backbutton_leave(event):
-            Anm_Canvas.itemconfigure('backbutton', image = backbutton_anm_image)
-
-        def backbutton_func(event):
-            global anm_pos, Passwort_eingabe, Name_eingabe 
-            if anm_pos == 'Anmelden':
-                self.Schließen('BG')
-                self.Aufrufen(1)
-                Name_eingabe.destroy()
-                Passwort_eingabe.destroy()
-                Anm_Canvas.delete('Name', 'Passwort', 'Bestätigen')
-            elif anm_pos == 'Registrieren':
-                self.Schließen('BG')
-                self.Aufrufen(1)
             
-        
-        Anm_Canvas.tag_bind('backbutton', '<Enter>', backbutton_enter)
-        Anm_Canvas.tag_bind('backbutton', '<Leave>', backbutton_leave)
-        
+        else:
+            print('"Where" must be "Position"\nWhere:',str(Where),'\nPosition:',str(Position))
 
 This = Anmeldefenster()
 This.Aufrufen()
+            
+             
