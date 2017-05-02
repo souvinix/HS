@@ -21,18 +21,11 @@ class Account(object):
             pass
 
         try:
-            if len(passwort) < 6:
+            if len(passwort) < 7:
                 del self
                 print('Account konnte nicht erstellt werden.\nAufgrund: Passwort')
         except:
-            pass
-            
-    def __del__(self):
-        global Acc_anzahl
-        Acc_anzahl -= 1
-        print(self.name,'wurde gelöscht!\n')
-        print('Es existieren noch',str(Acc_anzahl),'Accounts.')
-        
+            pass        
 
     def add_item(self, item, anzahl):
         try:

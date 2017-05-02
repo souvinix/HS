@@ -1,6 +1,7 @@
 from tkinter import *
 import time
 from Account import *
+#from Anmeldung import *
 
 #My windows
 fenster = Tk()
@@ -170,11 +171,7 @@ def speicherbutton_maus1(event):
 def quitbutton_maus1(event):
     fenster.destroy()
 
-    
-        
-
 Hauptmenü = MENU
 Backbutton = BACKBUTTON
 Hauptmenü.Aufrufen()
 fenster.mainloop()
-

@@ -1,10 +1,16 @@
 from tkinter import *
 import sqlite3
 from Account import *
+from Hs2 import *
 
-connection = sqlite3.connect('/Users/noahg/Desktop/HS II/HS_Database.db')
+try:
+    connection = sqlite3.connect('/Users/noahg/Desktop/HS II/HS_Database.db')
+except:
+    connection = sqlite3.connect('HS_Database.db')
 
 cursor = connection.cursor()
+
+HSII = False
 
 def RegisterSQL(Name, Passwort, Passwort2):
     Gold = 0
@@ -20,7 +26,10 @@ def RegisterSQL(Name, Passwort, Passwort2):
     cursor.execute("INSERT INTO Accounts (Name, Passwort, Level, Gold, Packs, Staub, Ep, Epnextlevel) VALUES (?,?,?,?,?,?,?,?)", (Name, Passwort, Level, Gold, Packs, Staub, Ep, Epnextlevel))
     connection.commit()
 
+    __USER__ = Account(Name, Passwort, Level, Gold, Packs, Staub)
+
 def AnmeldenSQL(Name, Passwort):
+    global HSII
     find_user = ('select * from Accounts where Name = ? and Passwort = ?')
     cursor.execute(find_user, [(Name), (Passwort)])
     results = cursor.fetchall()
@@ -28,7 +37,8 @@ def AnmeldenSQL(Name, Passwort):
     if results:
         for i in results:
             print('Willkommen', str(Name)+'!')
-
+            HSII = True
+            
     else:
 
         print('Der Account mit dem Namen:\n', str(Name),'\nund dem Passwort:\n', str(Passwort),'\nkonnte nicht gefunden werden!\n\n')
@@ -68,7 +78,7 @@ def Anmeldebutton_function(event):
     Position = 'Anmelden'
     User.create_backbutton(Position)
 
-    AnmCanvas.create_text(250, 170, text = 'Name:', font = ('Terminator Two', 20), tags = 'Name')
+    AnmCanvas.create_text(250, 180, text = 'Name:', font = ('Terminator Two', 20), tags = 'Name')
     #Entry
     Name_eingabe = Entry(bd = 15, width = 10, font = ('MelodBold', 20), bg = '#8B591C')
     Name_eingabe.place(x = 150, y = 200)
@@ -83,6 +93,8 @@ def Anmeldebutton_function(event):
     AnmCanvas.tag_bind('Bestätigen', '<Enter>', bestätigen_enter)
     AnmCanvas.tag_bind('Bestätigen', '<Leave>', bestätigen_leave)
     anmeldung.bind('<Return>', bestätigen_func)
+
+    
 
 def Registerbutton_function(event):
     global Position, Name_eingabe, Passwort_eingabe, Passwort_eingabe2
@@ -116,11 +128,11 @@ def bestätigen_reg_func(event):
         print('Passwörter stimmen nicht überein.')
         Register = False
 
-    elif Entry_Passwort == '' and Entry_Passwort2 == '':
+    if Entry_Passwort == '' and Entry_Passwort2 == '':
         print('Füllen sie die Pflichtfelder aus(Passwort).')
         Register = False
 
-    elif (len(Entry_Passwort) < 7):
+    if (len(Entry_Passwort) < 7):
         print('Passwort ist zu kurz! (7 Zeichen)')
         Register = False
         
@@ -128,7 +140,7 @@ def bestätigen_reg_func(event):
         print('Füllen sie die Pflichtfelder aus(Name).')
         Register == False
 
-    elif (len(Entry_Name) < 4):
+    if (len(Entry_Name) < 4):
         print('Name ist zu kurz! (4 Zeichen)')
         Register == False
 
@@ -145,6 +157,7 @@ def bestätigen_reg_func(event):
             RegisterSQL(Entry_Name, Entry_Passwort, Entry_Passwort2)
             Name_eingabe.delete(0, 'end')
             Passwort_eingabe.delete(0, 'end')
+            Passwort_eingabe2.delete(0, 'end')
     
 
 def backbutton_enter(event):
@@ -235,7 +248,5 @@ class Anmeldefenster(object):
         else:
             print('"Where" must be "Position"\nWhere:',str(Where),'\nPosition:',str(Position))
 
-This = Anmeldefenster()
-This.Aufrufen()
-            
-             
+Top = Anmeldefenster()
+Top.Aufrufen()
