@@ -1,7 +1,7 @@
 from tkinter import *
 import sqlite3
 from Account import *
-from Hs2 import *
+#from Hs2 import Login
 
 try:
     connection = sqlite3.connect('/Users/noahg/Desktop/HS II/HS_Database.db')
@@ -10,7 +10,12 @@ except:
 
 cursor = connection.cursor()
 
-HSII = False
+try:
+    cursor.execute('create table if not exists Accounts (Name, Passwort, Level, Gold, Packs, Staub, Ep, Epnextlevel);')
+except:
+    pass
+
+Login = False
 
 def RegisterSQL(Name, Passwort, Passwort2):
     Gold = 0
@@ -29,7 +34,7 @@ def RegisterSQL(Name, Passwort, Passwort2):
     __USER__ = Account(Name, Passwort, Level, Gold, Packs, Staub)
 
 def AnmeldenSQL(Name, Passwort):
-    global HSII
+    global Login
     find_user = ('select * from Accounts where Name = ? and Passwort = ?')
     cursor.execute(find_user, [(Name), (Passwort)])
     results = cursor.fetchall()
@@ -37,12 +42,15 @@ def AnmeldenSQL(Name, Passwort):
     if results:
         for i in results:
             print('Willkommen', str(Name)+'!')
-            HSII = True
+            fenster = anmeldung
+            Login = True
+            AfterLogin()
+            #anmeldung.destroy()
+                        
             
     else:
 
         print('Der Account mit dem Namen:\n', str(Name),'\nund dem Passwort:\n', str(Passwort),'\nkonnte nicht gefunden werden!\n\n')
-    
 
 def Anmeldebutton_enter(event):
     AnmCanvas.itemconfigure('Anmeldebutton', image = Anmeldebutton_enter_image)
@@ -69,8 +77,10 @@ def bestätigen_func(event):
     Entry_Name = Name_eingabe.get()
     Entry_Passwort = Passwort_eingabe.get()
     AnmeldenSQL(Entry_Name, Entry_Passwort)
-    Name_eingabe.delete(0, 'end')
-    Passwort_eingabe.delete(0, 'end')
+
+    if not Login:
+        Name_eingabe.delete(0, 'end')
+        Passwort_eingabe.delete(0, 'end')
 
 def Anmeldebutton_function(event):
     global Position, Name_eingabe, Passwort_eingabe
@@ -228,6 +238,18 @@ class Anmeldefenster(object):
 
     def Window(self, Modus):
         if Modus == 'Exit' or Modus == 'Close':
+            try:
+                Name_eingabe.destroy()
+            except:
+                pass
+            try:
+                Passwort_eingabe.destroy()
+            except:
+                pass
+            try:
+                Passwort_eingabe2.destroy()
+            except:
+                pass
             anmeldung.destroy()
         elif Modus == 'OnlyBG':
             AnmCanvas.delete('Anmeldebutton', 'Registerbutton', 'LOGO')
@@ -248,5 +270,5 @@ class Anmeldefenster(object):
         else:
             print('"Where" must be "Position"\nWhere:',str(Where),'\nPosition:',str(Position))
 
-Top = Anmeldefenster()
-Top.Aufrufen()
+
+
