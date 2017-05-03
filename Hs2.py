@@ -337,10 +337,13 @@ def Analyze_Account():
     for i in Epnextlevel:
         Epnextlevel = i[0]
 
-def Account_Info():
+def Account_Info(printing = False):
+    global Infos
     Infos = ('Name: {}\nPasswort: {}\nLevel: {}\nGold: {}\nPacks: {}\nStaub: {}\nEp: {}\nEpnextlevel: {}'
              .format(Name, Passwort, Level, Gold, Packs , Staub, Ep, Epnextlevel))
-    print(Infos)
+
+    if printing:
+        print(Infos)
 
 def AfterLogin():
     global Name, Passwort
@@ -361,7 +364,7 @@ def AfterLogin():
     POS = 'Hauptmenü'
 
     #My images
-    pfad = ''
+    pfad = 'HS_IMAGES/'
     pfad2 = 'Buttons/'
     background1 = PhotoImage(file = pfad+'background1.gif')
     Hearthstone_Logo = PhotoImage(file = pfad+'Hearthstone_Logo.png')
@@ -382,11 +385,16 @@ def AfterLogin():
     shop_enter_image = PhotoImage(file = pfad+'shop_enter_image.png')
     goldanzeige = PhotoImage(file = pfad+'Goldanzeige1.png')
     packanzeige = PhotoImage(file = pfad+'Packanzeige1.png')
+    shop_packs_image = PhotoImage(file = pfad+'shop_packs.png')
+    shop_packs_enter_image = PhotoImage(file = pfad+'shop_packs_enter.png')
+    settings_image = PhotoImage(file = pfad + 'settings_image.png')
+    settings_enter_image = PhotoImage(file = pfad + 'settings_enter_image.png')
+    
 
-    fenster.iconbitmap('hs_icon.ico')
+    fenster.iconbitmap(pfad+'hs_icon.ico')
 
     class MENU(object):
-        def Aufrufen():
+        def Aufrufen(Canv = False):
             global MyCanvas
             def startbutton_enter(event):
                 MyCanvas.itemconfigure('startbutton', image = startbutton_enter_image)
@@ -413,9 +421,15 @@ def AfterLogin():
             def shopbutton_leave(event):
                 MyCanvas.itemconfigure('shopbutton', image = shop_image)
                 MyCanvas.itemconfigure('shoptext', fill = 'black')
+            def settings_enter(event):
+                MyCanvas.itemconfigure('settings', image = settings_enter_image)
+                MyCanvas.tag_bind('settings', '<Button-1>', Einstellungen)
+            def settings_leave(leave):
+                MyCanvas.itemconfigure('settings', image = settings_image)
 
-            MyCanvas = Canvas(fenster, width = 800, height = 600)
-            MyCanvas.place(x = 0, y = 0)
+            if Canvas:
+                MyCanvas = Canvas(fenster, width = 800, height = 600)
+                MyCanvas.place(x = 0, y = 0)
             MyCanvas.create_image(400,300, image = background1, tags = 'canv_background1')
             MyCanvas.create_image(400,105, image = Hearthstone_Logo, tags = 'canv_hearthstone_logo')
             MyCanvas.create_image(360,275, image = startbutton_image, tags = 'startbutton')
@@ -423,7 +437,10 @@ def AfterLogin():
             MyCanvas.create_image(540,525, image = quitbutton_image, tags = 'quitbutton')
             MyCanvas.create_image(160, 550, image = shop_image, tags = 'shopbutton')
             MyCanvas.create_text(160, 480, text = 'Shop', font = ('Terminator Two', 30), fill = 'black', tags = 'shoptext')
+            MyCanvas.create_image(600, 280, image = settings_image, tags = 'settings')
 
+            MyCanvas.tag_bind('settings', '<Enter>', settings_enter)
+            MyCanvas.tag_bind('settings', '<Leave>', settings_leave)
             MyCanvas.tag_bind('startbutton', '<Enter>', startbutton_enter)
             MyCanvas.tag_bind('startbutton', '<Leave>', startbutton_leave)
             MyCanvas.tag_bind('optionbutton', '<Enter>', optionbutton_enter)
@@ -461,14 +478,17 @@ def AfterLogin():
                 elif POS == 'Start':
                     Hauptmenü.Aufrufen()
                 elif POS == 'Shop':
-                    MyCanvas.delete('goldanzeige', 'packanzeige', 'backbutton')
+                    MyCanvas.delete('goldanzeige', 'packanzeige', 'backbutton', 'goldanzeige_text', 'packanzeige_text')
+                    MyCanvas.delete('shop_packs', 'shop_packs_text')
                     Hauptmenü.Aufrufen()
                     POS = 'Hauptmenü'
             
             MyCanvas.tag_bind('backbutton', '<Enter>', backbutton_enter)
             MyCanvas.tag_bind('backbutton', '<Leave>', backbutton_leave)
             
-
+    def Einstellungen(event):
+        POS = 'Einstellungen'
+    
     def startbutton_maus1(event):
         global POS
         POS = 'Start'
@@ -480,9 +500,14 @@ def AfterLogin():
         POS = 'Shop'
         MyCanvas.create_image(450, 50, image = goldanzeige, tags = 'goldanzeige')
         MyCanvas.create_image(650, 50, image = packanzeige, tags = 'packanzeige')
+        MyCanvas.create_text(480, 50, text = str(Gold), font = ('MelodBold', 10), tags = 'goldanzeige_text')
+        MyCanvas.create_text(635, 50, text = str(Packs), font = ('MelodBold', 10), tags = 'packanzeige_text')
+        MyCanvas.create_image(180, 230, image = shop_packs_image, tags = 'shop_packs')
+        MyCanvas.create_text(175, 320, text = 'PACKS', font = ('MelodBold', 25), tags = 'shop_packs_text')
+        MyCanvas.tag_bind('shop_packs', '<Enter>', shop_packs_enter)
+        MyCanvas.tag_bind('shop_packs', '<Leave>', shop_packs_leave)
         Hauptmenü.Entfernen('ja')
         Backbutton.create()
-
     def optionbutton_maus1(event):
         global POS
         POS = 'Optionen'
@@ -497,6 +522,17 @@ def AfterLogin():
         MyCanvas.tag_bind('speicherbutton', '<Enter>', speicherbutton_enter)
         MyCanvas.tag_bind('speicherbutton', '<Leave>', speicherbutton_leave)
         Backbutton.create()
+
+    def shop_packs_enter(event):
+        MyCanvas.itemconfigure('shop_packs', image = shop_packs_enter_image)
+        MyCanvas.itemconfigure('shop_packs_text', fill = 'white')
+        MyCanvas.tag_bind('shop_packs', '<Button-1>', shop_packs_func)
+    def shop_packs_leave(event):
+        MyCanvas.itemconfigure('shop_packs_text', fill = 'black')
+        MyCanvas.itemconfigure('shop_packs', image = shop_packs_image)
+
+    def shop_packs_func(event):
+        print('Packs!')
 
     def ladebutton_enter(event):
         MyCanvas.itemconfigure('ladebutton', image = ladebutton_enter_image)
@@ -522,7 +558,7 @@ def AfterLogin():
 
     Hauptmenü = MENU
     Backbutton = BACKBUTTON
-    Hauptmenü.Aufrufen()
+    Hauptmenü.Aufrufen(Canv = True)
     fenster.mainloop()
 
 
