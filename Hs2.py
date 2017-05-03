@@ -2,6 +2,7 @@ from tkinter import *
 import time
 from Account import *
 import sqlite3
+import os
 
 try:
     connection = sqlite3.connect('/Users/noahg/Desktop/HS II/HS_Database.db')
@@ -44,6 +45,7 @@ def AnmeldenSQL(Name, Passwort):
             print('Willkommen', str(Name)+'!')
             fenster = anmeldung
             Login = True
+            Top.Window('Clear_All')
             AfterLogin()
                         
             
@@ -73,6 +75,7 @@ def bestätigen_leave(event):
     AnmCanvas.itemconfigure('Bestätigen', image = bestätigen_anm_image)
 
 def bestätigen_func(event):
+    global Entry_Name, Entry_Passwort
     Entry_Name = Name_eingabe.get()
     Entry_Passwort = Passwort_eingabe.get()
     AnmeldenSQL(Entry_Name, Entry_Passwort)
@@ -296,11 +299,59 @@ class Anmeldefenster(object):
 
 
 
+def Analyze_Account():
+    global Level, Gold, Packs, Staub, Ep, Epnextlevel
+    command = ('select Level from Accounts where Name = ? and Passwort = ?')
+    cursor.execute(command, (Name, Passwort))
+    Level = cursor.fetchall()
+    for i in Level:
+        Level = i[0]
 
+    command = ('select Gold from Accounts where Name = ? and Passwort = ?')  
+    cursor.execute(command, (Name, Passwort))
+    Gold = cursor.fetchall()
+    for i in Gold:
+        Gold = i[0]
+
+    command = ('select Packs from Accounts where Name = ? and Passwort = ?')
+    cursor.execute(command, (Name, Passwort))
+    Packs = cursor.fetchall()
+    for i in Packs:
+        Packs = i[0]
+
+    command = ('select Staub from Accounts where Name = ? and Passwort = ?')
+    cursor.execute(command, (Name, Passwort))
+    Staub = cursor.fetchall()
+    for i in Staub:
+        Staub = i[0]
+
+    command = ('select Ep from Accounts where Name = ? and Passwort = ?')
+    cursor.execute(command, (Name, Passwort))
+    Ep = cursor.fetchall()
+    for i in Ep:
+        Ep = i[0]
+
+    command = ('select Epnextlevel from Accounts where Name = ? and Passwort = ?')
+    cursor.execute(command, (Name, Passwort))
+    Epnextlevel = cursor.fetchall()
+    for i in Epnextlevel:
+        Epnextlevel = i[0]
+
+def Account_Info():
+    Infos = ('Name: {}\nPasswort: {}\nLevel: {}\nGold: {}\nPacks: {}\nStaub: {}\nEp: {}\nEpnextlevel: {}'
+             .format(Name, Passwort, Level, Gold, Packs , Staub, Ep, Epnextlevel))
+    print(Infos)
 
 def AfterLogin():
+    global Name, Passwort
     fenster = anmeldung
+    Name = Entry_Name
+    Passwort = Entry_Passwort
 
+    Analyze_Account()
+    #Account_Info()
+
+    fenster.quit()
     #My windows    
     fenster.title('Hearthstone II')
     fenster.geometry('800x600')
@@ -466,7 +517,7 @@ def AfterLogin():
         pass
 
     def quitbutton_maus1(event):
-        fenster.destroy()
+        os._exit(1)
 
 
     Hauptmenü = MENU
