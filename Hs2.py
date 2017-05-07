@@ -352,7 +352,7 @@ def AfterLogin():
     Passwort = Entry_Passwort
 
     Analyze_Account()
-    #Account_Info()
+    Account_Info(True)
 
     fenster.quit()
     #My windows    
