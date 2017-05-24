@@ -30,7 +30,7 @@ for i in cursor:
     All_Quiz = len(i)
     Quiz_Names = i
 
-print(Quiz_Names)
+#print(Quiz_Names)
     
 fenster = Tk()
 fenster.title('SuperQuiz')
@@ -43,6 +43,7 @@ Main_Canvas.place(x = 0, y = 0)
 pfad = ''
 background = PhotoImage(file = pfad+'SuperQuiz_bg.gif')
 rahmen = PhotoImage(file = pfad+'Rahmen.gif')
+myquiz_bg = PhotoImage(file = pfad+'myquiz_bg.gif')
 Position = StringVar()
 
 class Zurückknopf(object):
@@ -50,8 +51,14 @@ class Zurückknopf(object):
         self.MyCanvas = MyCanvas
         self.Menu = Menu
     def Aufrufen(self):
-        self.MyCanvas.create_text(50, 10, text = 'Zurück', font = ('Terminator Two', 15), fill = 'light blue',
-                                  tags = 'Backbutton')
+        if Position == 'Start' or Position == 'Myquiz':
+            self.MyCanvas.create_text(50, 10, text = 'Zurück', font = ('Terminator Two', 15), fill = 'light blue',
+                                      tags = 'Backbutton')
+
+        elif Position == 'Erstellen' or Position == 'Bearbeiten' or Position == 'Löschen':
+            self.MyCanvas.create_text(50, 10, text = 'Hauptmenü', font = ('Terminator Two', 15), fill = 'light blue',
+                                      tags = 'Backbutton')
+            
         def backbutton_enter(event):
             self.MyCanvas.itemconfigure('Backbutton', fill = 'white')
             self.MyCanvas.tag_bind('Backbutton', '<Button-1>', Back)
@@ -70,6 +77,11 @@ class Zurückknopf(object):
                     print('Backbutton-Fehler(#1)')
             elif Position == 'Myquiz':
                 self.Menu.Aufrufen()
+                Main_Canvas.delete('Erstellen_Button', 'Bearbeiten_Button', 'Löschen_Button')
+                
+            elif Position == 'Erstellen':
+                pass
+                
         self.MyCanvas.tag_bind('Backbutton', '<Enter>', backbutton_enter)
         self.MyCanvas.tag_bind('Backbutton', '<Leave>', backbutton_leave)
     
@@ -199,9 +211,60 @@ def start(event):
     except:
         Main_Canvas.create_text(400, 275, text = 'Kein Quiz wurde erstellt.', font = ('Terminator Two', 30),
                                  fill = 'red', tags = 'No_Quiz')
-def myquiz(event):
+
+def Erstellen(event):
     global Position
-    MeinHauptmenü.Entfernen()
-    Position = 'Myquiz'
+    
+    try:
+        Main_Canvas.delete('Erstellen_Button', 'Bearbeiten_Button', 'Löschen_Button')
+        Position = 'Erstellen'
+        Backbutton.Aufrufen()
+    except:
+        print('Fehler')
+def Bearbeiten(event):
+    pass
+def Loeschen(event):
+    pass
+
+def myquiz(event):
+    global Position    
+
+    def erstellen_button_enter(event):
+        Main_Canvas.itemconfigure(erstellen_button, fill = 'light blue')
+        Main_Canvas.tag_bind(erstellen_button, '<Button-1>', Erstellen)
+    def erstellen_button_leave(event):
+        Main_Canvas.itemconfigure(erstellen_button, fill = 'red')
         
+    def bearbeiten_button_enter(event):
+        Main_Canvas.itemconfigure(bearbeiten_button, fill = 'light blue')
+        Main_Canvas.tag_bind(bearbeiten_button, '<Button-1>', Bearbeiten)
+    def bearbeiten_button_leave(event):
+        Main_Canvas.itemconfigure(bearbeiten_button, fill = 'red')
+    
+    def loeschen_button_enter(event):
+        Main_Canvas.itemconfigure(loeschen_button, fill = 'light blue')
+        Main_Canvas.tag_bind(loeschen_button, '<Button-1>', Loeschen)
+    def loeschen_button_leave(event):
+        Main_Canvas.itemconfigure(loeschen_button, fill = 'red')
+    
+    MeinHauptmenü.Entfernen()
+    Main_Canvas.create_image(400, 0, image = myquiz_bg, tags = 'MyQuiz_bg')
+    Backbutton.Aufrufen()
+    Position = 'Myquiz'
+    
+    erstellen_button = Main_Canvas.create_text(400, 200, text = 'Erstellen', font = ('Terminator Two', 40),
+                                               fill = 'red', tags = 'Erstellen_Button')
+    bearbeiten_button = Main_Canvas.create_text(400, 300, text = 'Bearbeiten', font = ('Terminator Two', 40),
+                                               fill = 'red', tags = 'Bearbeiten_Button')
+    loeschen_button = Main_Canvas.create_text(400, 400, text = 'Löschen', font = ('Terminator Two', 40),
+                                               fill = 'red', tags = 'Löschen_Button')
+        
+    
+    Main_Canvas.tag_bind(erstellen_button, '<Enter>', erstellen_button_enter)
+    Main_Canvas.tag_bind(erstellen_button, '<Leave>', erstellen_button_leave)
+    Main_Canvas.tag_bind(bearbeiten_button, '<Enter>', bearbeiten_button_enter)
+    Main_Canvas.tag_bind(bearbeiten_button, '<Leave>', bearbeiten_button_leave)
+    Main_Canvas.tag_bind(loeschen_button, '<Enter>', loeschen_button_enter)
+    Main_Canvas.tag_bind(loeschen_button, '<Leave>', loeschen_button_leave)
+    
 fenster.mainloop()
